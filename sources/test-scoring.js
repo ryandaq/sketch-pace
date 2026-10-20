@@ -5,8 +5,8 @@ const assert = require("assert");
 const html=fs.readFileSync(path.join(__dirname,"..","index.html"),"utf8");
 const appSource=fs.readFileSync(path.join(__dirname,"..","app.js"),"utf8");
 for(const match of appSource.matchAll(/\$\("([^"]+)"\)/g))assert(html.includes(`id="${match[1]}"`),`missing HTML control ${match[1]}`);
-for(const type of ["line","through","ellipse","box"])for(const suffix of ["Enabled","Guide"])assert(html.includes(`id="${type+suffix}"`));
-for(const type of ["line","ellipse"])for(let i=0;i<3;i++)for(const suffix of ["Weight","Percent"])assert(html.includes(`id="${type+suffix+i}"`));
+for(const type of ["line","through","ellipse","arc","box"])for(const suffix of ["Enabled","Guide"])assert(html.includes(`id="${type+suffix}"`));
+for(const type of ["line","ellipse","arc"])for(let i=0;i<(type==="arc"?2:3);i++)for(const suffix of ["Weight","Percent"])assert(html.includes(`id="${type+suffix+i}"`));
 
 const listeners = {}, elements = new Map(), storage = new Map();
 const ctx = {setTransform(){},clearRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},setLineDash(){},arc(){},fill(){}};
@@ -77,6 +77,18 @@ assert(qa.gradeEllipse(ellipse.points,ellipse).score>95);
 const distorted=ellipse.points.map((p,i)=>({x:ellipse.center.x+(p.x-ellipse.center.x)*(1+.1*Math.sin(i*.7)),y:ellipse.center.y+(p.y-ellipse.center.y)*(1+.1*Math.sin(i*.7))}));
 assert(qa.gradeEllipse(distorted,ellipse).score<qa.gradeEllipse(ellipse.points,ellipse).score);
 
+// Both arc variants fit the canvas and score the intended branch in either direction.
+for(const variant of ["three","tangent"])for(const [w,h] of [[900,520],[520,520],[390,520]])for(let i=0;i<80;i++){
+  const spec=qa.makeArcSpec(w,h,variant),edge=qa.targetEdges(spec)[0],perfect=qa.gradeArc(edge.points,edge),backward=qa.gradeArc(edge.points.slice().reverse(),edge);
+  assert(edge.points.every(p=>p.x>=w*.08&&p.x<=w*.92&&p.y>=h*.08&&p.y<=h*.92),`${variant} arc outside ${w}×${h}`);
+  assert(perfect.score>95,`${variant} perfect arc score ${perfect.score}`);
+  assert(Math.abs(perfect.score-backward.score)<1e-7,`${variant} score changes with direction`);
+  const [a,b]=[edge.points[0],edge.points.at(-1)],chord=Array.from({length:61},(_,j)=>({x:a.x+(b.x-a.x)*j/60,y:a.y+(b.y-a.y)*j/60}));
+  assert(qa.gradeArc(chord,edge).score<perfect.score-20,`${variant} chord should score poorly`);
+  const shifted=edge.points.map(p=>({x:p.x+Math.min(25,w*.06),y:p.y}));
+  assert(qa.gradeArc(shifted,edge).score<perfect.score-15,`${variant} shifted arc should score poorly`);
+}
+
 // Tall, balanced, and wide constructions must actually vary in canvas space.
 for(const [shape,min,max] of [["tall",1.12,Infinity],["wide",0,.86],["balanced",.86,1.12]]){
   for(const [w,h] of [[900,520],[520,520],[390,520]]){
@@ -97,16 +109,20 @@ listeners["lineWeight1:input"]({target:{value:"0"}});
 listeners["lineWeight2:input"]({target:{value:"0"}});
 assert(state.prefs.weights.line.some(x=>x>0));
 assert.equal(element("linePercent2").textContent,"1/5");
+listeners["arcWeight0:input"]({target:{value:"0"}});
+assert.equal(qa.makeTarget("arc",900,520).variant,"tangent");
+listeners["arcWeight1:input"]({target:{value:"0"}});
+assert(state.prefs.weights.arc.some(x=>x>0));
 
 element("practiceButton").click();
 assert.equal(state.mode,"practice");
 for(let i=0;i<18;i++){completeCurrent();assert.equal(state.mode,"practice");assert.equal(state.completed,i+1);}
 assert.equal(element("previousResult").hidden,false);
-assert.equal(state.stats.line.count+state.stats.through.count+state.stats.ellipse.count+state.stats.box.count,18);
+assert.equal(state.stats.line.count+state.stats.through.count+state.stats.ellipse.count+state.stats.arc.count+state.stats.box.count,18);
 assert(storage.has("sketch-pace-v5"));
 
 // Box strokes accumulate without scoring until explicit submission.
-state.prefs.enabled={line:false,through:false,ellipse:false,box:true};
+state.prefs.enabled={line:false,through:false,ellipse:false,arc:false,box:true};
 element("practiceButton").click();
 assert.equal(state.mode,null);
 element("practiceButton").click();
@@ -123,7 +139,7 @@ assert.equal(state.completed,1);
 
 // The new drill can run by itself; hiding its guide keeps checkpoint scoring.
 element("practiceButton").click();
-state.prefs.enabled={line:false,through:true,ellipse:false,box:false};
+state.prefs.enabled={line:false,through:true,ellipse:false,arc:false,box:false};
 element("practiceButton").click();
 assert.equal(state.target.type,"through");
 const beforeThrough=state.stats.through.count;
@@ -135,18 +151,45 @@ assert.equal(state.target.b,checkpointPair[1]);
 completeCurrent();
 assert.equal(state.stats.through.count,beforeThrough+1);
 
+// Arc variants can each run alone, with guide visibility independent of scoring.
+element("practiceButton").click();
+state.prefs.enabled={line:false,through:false,ellipse:false,arc:true,box:false};
+state.prefs.weights.arc=[5,0];
+element("practiceButton").click();
+assert.equal(state.target.type,"arc");
+assert.equal(state.target.variant,"three");
+const beforeArcs=state.stats.arc.count;
+listeners["arcGuide:change"]({target:{checked:false}});
+assert.equal(state.prefs.guide.arc,false);
+completeCurrent();
+assert.equal(state.stats.arc.count,beforeArcs+1);
+state.prefs.weights.arc=[0,5];
+element("resetButton").click();
+assert.equal(state.target.variant,"tangent");
+completeCurrent();
+assert.equal(state.stats.arc.count,beforeArcs+2);
+
 // Test freezes selected types, advances exactly its length, and records one overall result.
-state.prefs.enabled={line:true,through:true,ellipse:true,box:true};
+state.prefs.enabled={line:true,through:true,ellipse:true,arc:true,box:true};
 element("testLength").value="6";
 listeners["testLength:change"]({target:{value:"6"}});
 element("testButton").click();
 assert.equal(state.mode,"test");
 assert.equal(state.testPlan.length,6);
-assert.equal(new Set(state.testPlan).size,4);
+assert.equal(new Set(state.testPlan).size,5);
 for(let i=0;i<6;i++)completeCurrent();
 assert.equal(state.mode,"complete");
 assert.equal(state.tests.length,1);
 assert.equal(state.tests[0].count,6);
 assert(state.tests[0].score>85);
 assert.equal(element("canvasOverlay").hidden,false);
+
+// Loading an older version-5 save preserves progress and adds arc defaults.
+storage.set("sketch-pace-v5",JSON.stringify({version:5,preferences:{enabled:{line:true,through:false,ellipse:false,box:false},guide:{line:false,through:true,ellipse:true,box:true},weights:{line:[1,2,3],ellipse:[2,4,2]},testLength:12,inputMode:"auto"},practice:{line:{count:3,score:240,time:18}},tests:[{date:"2026-10-01T00:00:00.000Z",score:80,time:45,count:6,types:["line"]}]}));
+vm.runInNewContext(appSource,sandbox,{filename:"app.js"});
+const migrated=sandbox.window.SketchPaceDebug.state;
+assert.equal(migrated.stats.line.count,3);
+assert.equal(migrated.tests.length,1);
+assert.equal(migrated.prefs.enabled.arc,true);
+assert.deepEqual(Array.from(migrated.prefs.weights.arc),[3,3]);
 console.log("Sketch Pace v5 scoring and session checks passed.");
