@@ -1,0 +1,25 @@
+# GitHub source catalog
+
+Checked 2026-10-15. Links go to the repositories or the most relevant source file. This is a research index, not a bundle of third-party code. Complexity and app-fit assessments are my analysis of the methods; repository authors do not claim the app-specific rankings.
+
+| Repository | Relevant method or code | Fit for Sketch Pace | License shown on GitHub |
+|---|---|---|---|
+| [nok/onedollar-unistroke-coffee](https://github.com/nok/onedollar-unistroke-coffee) | $1 gesture recognizer; path resampling to a fixed count, then template path distance. README uses 64 points by default. | Strong preprocessing idea. Full translation/scale/rotation normalization would make target placement errors invisible. | MIT |
+| [LingDong-/squiggy](https://github.com/LingDong-/squiggy#preprocessing) | Equal-distance polyline resampling; also spline, blur, and approximation passes. | Strong independent example of distance-based sampling. Smoothing passes are unsuitable before scoring hand steadiness. | Not identified in repository page; no code copied. |
+| [mourner/simplify-js](https://github.com/mourner/simplify-js/blob/master/simplify.js) | Fast squared point-to-segment distance and radial/Douglas–Peucker simplification. | Squared-distance search is useful. Simplifying before scoring would delete meaningful deviations. | BSD-2-Clause |
+| [mapbox/cheap-ruler](https://github.com/mapbox/cheap-ruler) | Fast point-to-segment and point-on-line geometry; geodesic approximations for map coordinates. | Segment projection concept applies, but this app uses pixel coordinates and needs no geodesic package. | ISC |
+| [Turfjs/turf nearest-point-on-line](https://github.com/Turfjs/turf/blob/master/packages/turf-nearest-point-on-line/index.ts) | Locates the nearest point and distance on a multi-segment line. | Reference for contour distance. Full GeoJSON/geodesic machinery is unnecessary for a small canvas. | MIT |
+| [Meakk/circle-fit](https://github.com/Meakk/circle-fit) | Non-iterative least-squares fit for center/radius with residual and degenerate-case status. | Good future diagnostic for free circles. A fitted circle is not a fixed-target score by itself. | MIT |
+| [opencv/opencv](https://github.com/opencv/opencv/blob/5.x/doc/tutorials/imgproc/shapedescriptors/bounding_rotated_ellipses/bounding_rotated_ellipses.markdown) | `fitEllipse`, plus line and contour methods in the library. | Useful reference for inferred shape parameters; too large a dependency for this small static app. | Apache-2.0 |
+| [seisgo/EllipseFit](https://github.com/seisgo/EllipseFit) | Compares constrained/direct least-squares ellipse-fitting variants, with C++ and MATLAB implementations. | Helps evaluate a future unconstrained sketch mode. An inferred ellipse can match a stroke well while missing target dots. | MIT |
+| [paperjs/paper.js](https://github.com/paperjs/paper.js) | Path smoothing, simplification, flattening, and geometry comparison; see [tutorial](https://paperjs.org/tutorials/paths/smoothing-simplifying-flattening/). | Strong drawing tools, but preprocessing the scored path could hide wobble. | License file present; terms not evaluated here. |
+| [steveruizok/perfect-freehand](https://github.com/steveruizok/perfect-freehand) | Pressure-sensitive stroke rendering, streamlining, and accumulated stroke length; [input sampling discussion](https://github.com/steveruizok/perfect-freehand/issues/58). | Good later rendering/input reference. Its purpose is to improve appearance, so its smoothed output should not become the accuracy input. | MIT |
+| [odiak/fit-curve](https://github.com/odiak/fit-curve) | Schneider-style piecewise cubic Bézier fitting to digitized points. | Potential “cleaned overlay” for a later lesson, but fitted curves would conceal raw hand-control error if used for scoring. | MIT |
+| [tldraw/tldraw](https://github.com/tldraw/tldraw/releases) | Production drawing editor; release notes document fixes involving dense sampling, loop closure, and pointer-event allocations. | Useful caution that event density can change geometric behavior. No code taken. | Not evaluated here. |
+
+## Reading order
+
+1. Read [$1 Recognizer](https://github.com/nok/onedollar-unistroke-coffee) and [Squiggy preprocessing](https://github.com/LingDong-/squiggy#preprocessing) for why equal-distance samples matter.
+2. Read the [Simplify.js segment-distance source](https://github.com/mourner/simplify-js/blob/master/simplify.js) and [Turf nearest-point source](https://github.com/Turfjs/turf/blob/master/packages/turf-nearest-point-on-line/index.ts) for nearest-geometry primitives.
+3. Compare [circle-fit](https://github.com/Meakk/circle-fit), [OpenCV](https://github.com/opencv/opencv), and [EllipseFit](https://github.com/seisgo/EllipseFit) when considering a later diagnostic mode that estimates the shape a user actually drew.
+4. Keep [Paper.js](https://paperjs.org/tutorials/paths/smoothing-simplifying-flattening/), [perfect-freehand](https://github.com/steveruizok/perfect-freehand), and [fit-curve](https://github.com/odiak/fit-curve) for display experiments, separate from scoring.
