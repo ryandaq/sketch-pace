@@ -1,6 +1,6 @@
 # Sketch Pace
 
-A local, dependency-free app for repeatable design sketching control drills: endpoint lines, through-dot lines, ellipses, and perspective boxes. Open `index.html` in Chrome, Edge, or Safari. It accepts mouse, touch, and stylus pointer input.
+A local, dependency-free app for repeatable design sketching control drills: endpoint lines, through-dot lines, ellipses, arcs, and perspective boxes. Open `index.html` in Chrome, Edge, or Safari. It accepts mouse, touch, and stylus pointer input.
 
 ## Exploration Lab
 
@@ -12,11 +12,11 @@ Lab geometry scores are prototypes based on how closely your strokes cover gener
 
 ## Sessions
 
-- **Practice** runs indefinitely. Each target is randomly chosen from the enabled drill types. Lines and ellipses advance as soon as a stroke ends; boxes advance when you select **Score box**. The score and feedback for the previous target stay above the canvas. **Stop Practice** ends the session. Only average accuracy and average target time for each type are shown; an internal count and totals support those averages.
+- **Practice** runs indefinitely. Each target is randomly chosen from the enabled drill types. Lines, ellipses, and arcs advance as soon as a stroke ends; boxes advance when you select **Score box**. The score and feedback for the previous target stay above the canvas. **Stop Practice** ends the session. Only average accuracy and average target time for each type are shown; an internal count and totals support those averages.
 - **Test** contains 6, 12, or 18 targets. Enabled drill types are distributed as evenly as possible and shuffled. The selection is fixed for that test; guide visibility can still be changed. An overall accuracy score and total target time appear at the end. Test results are saved in the Test history for progress tracking. Skipping targets is disabled during a test.
 - The scoring scale is the same in both modes. Time is tracked separately from accuracy. A target's timer begins when it appears and ends when its completed drawing is scored.
 
-The **Drills & Guides** card holds each type's on/off switch and guide switch together. Endpoint and through-dot lines share the line-length controls; ellipse size has its own controls. Each size has a frequency weight from **0 to 5**. Zero means that size is off. The values are relative weights, not percentages: `2, 4, 2` makes medium targets twice as likely as either other size. At least one size and one drill type remain enabled. Guide switches change only what is drawn on screen; target dots and the scoring target remain in place.
+The **Drills & Guides** card holds each type's on/off switch and guide switch together. Endpoint and through-dot lines share the line-length controls; ellipse size and arc variant have their own controls. Each size or arc variant has a frequency weight from **0 to 5**. Zero means it is off. The values are relative weights, not percentages: `2, 4, 2` makes medium targets twice as likely as either other size. At least one option in each mix and one drill type remain enabled. Guide switches change only what is drawn on screen; target dots and the scoring target remain in place. Tangent stubs remain visible when the optional dotted arc is hidden because they define the tangency target.
 
 ## What is scored
 
@@ -25,6 +25,8 @@ The **Drills & Guides** card holds each type's on/off switch and guide switch to
 | Lines | Connect two unlabeled dots in either direction with one stroke. | 50% endpoint control, 50% straightness. The closest endpoint assignment is used, so drawing direction does not change the score. |
 | Through-dot lines | Make one straight stroke through two open checkpoint dots; start and finish wherever you like. | 70% proximity to the weaker of the two dot crossings, 30% straightness. Missing either dot is costly; stroke endpoints are never compared with the dots. |
 | Ellipses | Draw one smooth loop through four open axis dots. | 50% axis-dot proximity, 50% curve quality including target-relative shape, coverage, closure, excess travel, and wobble. |
+| Three-point arcs | Draw one arc between two endpoint dots and through a middle dot, in either direction. | 50% endpoint and middle-dot placement, 50% curve control. The curve score compares the mark with the intended circular arc and penalizes excess length and wobble. |
+| Tangent arcs | Draw one arc between the endpoint dots, matching the short tangent guides at each end, in either direction. | 50% endpoint placement and tangency, 50% curve control. The same target-relative curve check penalizes the wrong branch or a straight chord. |
 | Boxes | Draw nine edges in any order, one stroke per edge, then select **Score box**. | A whole-box match assigns strokes to target edges in whichever order gives the best score. Missing and extra edges lower accuracy. Each matched edge checks placement and straightness. |
 
 Boxes vary in location, vanishing points, depth, and height. The generator intentionally produces tall, wide, and balanced silhouettes; a tall box has greater vertical than horizontal span on the canvas. **Undo last** removes a box edge before submission. **New target** rerolls an unfinished Practice target without saving a score. Through-dot lines use a guide that extends beyond both dots when enabled, but the guide's endpoints are not scored.
@@ -35,7 +37,7 @@ These percentages are heuristic feedback for practice, not a validated assessmen
 
 Practice averages, test results, and settings are stored locally in this browser under a version 5 key. Older Sketch Pace storage is left intact but is not mixed with the new scoring scale. **Export data** creates a JSON backup; **Import backup** accepts version 5 backups. Export before switching devices. There is no automatic sync.
 
-The iPad layout puts the canvas before the longer progress and Lab library panels. **Drills & guides** and **Choose exercise** open those panels when needed. Controls are sized for touch, and the canvas supports pointer events. Select **Pencil only** to ignore finger touches when using Apple Pencil. Pencil behavior still needs testing on a real iPad.
+The iPad layout puts the canvas before the longer progress and Lab library panels. **Drills & guides** and **Choose exercise** open those panels when needed. Controls are sized for touch, and the canvas supports pointer events. Select **Pencil only** to ignore finger touches when using Apple Pencil. The core app has been tried on an iPad; the new arc targets still need an on-device check.
 
 ### Install and update on iPad
 

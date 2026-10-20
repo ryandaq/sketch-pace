@@ -1,4 +1,4 @@
-const CACHE = "sketch-pace-shell-v1";
+const CACHE = "sketch-pace-shell-v2";
 const SHELL = ["./", "./index.html", "./styles.css", "./lab.css", "./ipad.css", "./app.js", "./lab.js", "./manifest.webmanifest", "./icon.svg", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", event => {
