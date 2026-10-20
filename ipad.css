@@ -1,0 +1,72 @@
+/* Tablet layout keeps the active canvas near the top and makes controls Pencil-friendly. */
+.mobile-settings-toggle,.lab-library-toggle{display:none}
+.session-options{display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+@media (max-width:1100px){
+  .topbar{padding:12px max(20px,env(safe-area-inset-right)) 12px max(20px,env(safe-area-inset-left));gap:10px}
+  .topbar-right{margin-left:auto}
+  .topbar-pill{display:none}
+  .app-tabs{order:3;width:100%;justify-content:center}
+  .app-tab{flex:1;min-height:44px;font-size:13px}
+  .layout{display:flex;flex-direction:column;gap:14px;padding:18px max(20px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+  .sidebar{display:contents}
+  .intro-block{display:none}
+  .session-card{order:0}
+  .settings-card{order:1;display:none}
+  .settings-card.mobile-open{display:block}
+  .workspace{order:2;width:100%}
+  .progress-card{order:3}
+  .session-card>p{display:none}
+  .session-card h2{font-size:18px;margin:8px 0 12px}
+  .mode-buttons{grid-template-columns:1fr 1fr}
+  .session-options{margin-top:9px}
+  .test-length{margin:0;gap:12px;font-size:13px}
+  .mobile-settings-toggle,.lab-library-toggle{display:inline-flex}
+  .session-progress{margin-top:12px}
+  .workspace-header{min-height:0;padding:4px 1px 11px}
+  .workspace-header h2{font-size:26px;margin:5px 0}
+  .workspace-header p{font-size:13px}
+  .canvas-wrap{height:min(60vh,700px);min-height:430px}
+  .canvas-toolbar,.canvas-bottom{min-height:52px;height:auto}
+  .button,.text-button,.lab-tool{min-height:44px;font-size:13px}
+  input[type=text],input[type=search],select,textarea{font-size:16px!important}
+  input[type=checkbox],.guide-switch input[type=checkbox]{width:18px;height:18px}
+  .guide-switch,.type-heading label,.mix-options label{font-size:13px}
+  .mix-options input[type=range]{min-height:30px}
+  .lab-view{padding:18px max(20px,env(safe-area-inset-right)) max(32px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left))}
+  .lab-hero{padding:4px 0 14px;gap:12px;align-items:center}
+  .lab-hero h1{font-size:27px;margin:4px 0}
+  .lab-hero p{display:none}
+  .lab-layout{display:flex;flex-direction:column;gap:12px}
+  .lab-sidebar{display:none}
+  .lab-sidebar.mobile-open{display:flex}
+  .lab-catalog{max-height:340px}
+  .lab-catalog button{min-height:44px}
+  .lab-mode-head h2{font-size:26px}
+  .lab-mode-head p,.lab-status,.lab-settings label,.lab-tools label{font-size:12px}
+  .lab-settings select{min-height:40px;font-size:12px}
+  .lab-filters button{min-height:36px;font-size:11px}
+  .lab-canvas-foot>span{font-size:12px}
+}
+
+@media (max-width:780px){
+  .layout,.lab-view{padding-left:15px;padding-right:15px}
+  .canvas-wrap{height:min(58vh,650px);min-height:380px}
+  .lab-hero{align-items:stretch}
+  .lab-hero-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lab-hero-actions .button{justify-content:center;min-width:0}
+  .lab-settings{gap:10px}
+  .lab-mode-head{flex-wrap:wrap}
+  .lab-pin-actions{justify-content:flex-start}
+}
+
+@media (max-width:520px){
+  .topbar{padding-left:12px;padding-right:12px}
+  .layout,.lab-view{padding-left:12px;padding-right:12px}
+  .session-options{flex-wrap:wrap}
+  .mobile-settings-toggle{width:100%;justify-content:center}
+  .canvas-wrap{height:54vh;min-height:310px}
+  .canvas-bottom{flex-wrap:wrap;padding-block:8px}
+  .lab-canvas-foot>div{gap:6px}
+  .lab-hero h1{font-size:23px}
+}

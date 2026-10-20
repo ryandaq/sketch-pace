@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sketch Pace">
+  <rect width="512" height="512" rx="112" fill="#38533f"/>
+  <path d="M112 356 386 164" fill="none" stroke="#dbf48d" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="112" cy="356" r="20" fill="#fbfaf6"/>
+  <circle cx="386" cy="164" r="20" fill="#fbfaf6"/>
+  <path d="M192 397c64 10 120-4 173-40" fill="none" stroke="#9db49a" stroke-width="19" stroke-linecap="round"/>
+</svg>
